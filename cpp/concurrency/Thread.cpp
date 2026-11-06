@@ -96,7 +96,7 @@ int main()
         {
             // std::this_thread::sleep_for(std::chrono::seconds(1));
             using std::chrono::operator""s;
-            auto awake_time =  std::chrono::steady_clock::now() + 1s;
+            auto awake_time = std::chrono::steady_clock::now() + 1s;
             std::this_thread::sleep_until(awake_time);
 
             sched_param sch;
@@ -149,12 +149,13 @@ int main()
         int param = 100;
         std::thread t([param /* can be the reference */]
                       { std::this_thread::sleep_for(std::chrono::seconds(3));
-                      std::ofstream file("example.txt");
+                      std::ofstream file("detach-example.txt");
                       file << "Thread lambda: " << std::this_thread::get_id() << " params: " << param << std::endl;
 
-                    //   std::cout << "Thread lambda: " << std::this_thread::get_id() << " params: " << param << std::endl;
+                      std::cout << "Thread lambda: " << std::this_thread::get_id() << " params: " << param << std::endl;
                       /* we can't see this print */ });
         t.detach(); // this thread will be terminated when main thread will be finished
+        // std::this_thread::sleep_for(std::chrono::seconds(3)); // if detached thread is finished before main thread - NO terminatio
         // if thread remains without join or detach and program is finished - !terminate!
     }
     std::cout << "Thread end" << std::endl;

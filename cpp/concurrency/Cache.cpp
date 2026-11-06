@@ -8,8 +8,8 @@
 struct Data
 {
     // The counters are aligned to 64 bytes (alignas(64)) to prevent false sharing.
-    alignas(64) std::atomic<int> counter1;
-    alignas(64) std::atomic<int> counter2;
+    alignas(std::hardware_destructive_interference_size) std::atomic<int> counter1;
+    alignas(std::hardware_destructive_interference_size) std::atomic<int> counter2;
 };
 
 void increment_counter(std::atomic<int> &counter)
@@ -68,10 +68,10 @@ int main()
 
     {
         // std::hardware_destructive_interference_size
-        //      To prevent false sharing between threads.
+        //      To prevent false sharing between threads(ensuring that unrelated data accessed by different threads).
         //      Minimum offset between two objects to avoid false sharing. Guaranteed to be at least alignof(std::max_align_t)
         // std::hardware_constructive_interference_size
-        //      To promote true sharing between threads.
+        //      To promote true sharing between threads(ensuring that related data accessed together by different threads fits within the same cache line).
         //      Maximum size of contiguous memory to promote true sharing. Guaranteed to be at least alignof(std::max_align_t)
 
         const int num_threads = 4;

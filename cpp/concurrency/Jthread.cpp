@@ -185,6 +185,7 @@ int main()
                 }
             });
 
+        std::stop_token stop_token = sleepy_worker.get_stop_token();
         // A waiting worker thread
         // The condition variable will be awoken by the stop request.
         std::jthread waiting_worker(
@@ -196,13 +197,15 @@ int main()
                                                    { return false; });
                 std::cout << "Waiting worker is requested to stop\n";
                 return;
-            });
+            },
+            stop_token);
 
         std::this_thread::sleep_for(2s);
         // std::jthread::request_stop() can be called explicitly:
         std::cout << "Requesting stop of sleepy worker\n";
         sleepy_worker.request_stop();
         sleepy_worker.join();
+        std::this_thread::sleep_for(2s);
         std::cout << "Sleepy worker joined\n";
     }
 
@@ -274,9 +277,11 @@ int main()
     {
         // A worker thread.
         // It will wait until it is requested to stop.
+        Writer() << "main thread's id: " << std::this_thread::get_id() << '\n';
         std::jthread worker([](std::stop_token stoken)
                             {
         Writer() << "Worker thread's id: " << std::this_thread::get_id() << '\n';
+        // some work
         std::mutex mutex;
         std::unique_lock lock(mutex);
         std::condition_variable_any().wait(lock, stoken,
