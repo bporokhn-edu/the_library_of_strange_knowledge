@@ -1,0 +1,19 @@
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dll
+*.exe
+*.class
+*.pyc
+*.pyo
+__pycache__/
+
+# Build output directories
+build/
+dist/
+out/
+target/
